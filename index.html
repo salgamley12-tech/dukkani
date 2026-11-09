@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#176b55">
+  <meta name="description" content="دكّاني — متابعة ديون زبائن البقالة ودفعاتهم بسهولة">
+  <title>دكّاني | متابعة ديون الزبائن</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="دكّاني، الرئيسية">
+      <span class="brand-mark" aria-hidden="true">د</span>
+      <span><strong>دكّاني</strong><small>إدارة المحل ببساطة</small></span>
+    </a>
+    <div class="topbar-actions">
+      <button class="button button-quiet" id="export-button" type="button" title="تنزيل نسخة احتياطية">نسخة احتياطية</button>
+      <button class="button button-outline" id="settings-button" type="button">إعدادات العملة</button>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="welcome-row">
+      <div>
+        <p class="eyebrow" id="today-label"></p>
+        <h1>ديون الزبائن</h1>
+        <p class="muted intro">سجّل الديون والدفعات، وتابع المستحقات ومواعيد التحصيل من مكان واحد.</p>
+      </div>
+      <div class="welcome-actions">
+        <button class="button button-outline" id="add-customer-button" type="button"><span aria-hidden="true">＋</span> زبون جديد</button>
+        <button class="button button-primary" id="add-movement-button" type="button"><span aria-hidden="true">＋</span> تسجيل حركة</button>
+      </div>
+    </section>
+
+    <section class="stats-grid" aria-label="ملخص الديون">
+      <article class="stat-card stat-highlight"><div class="stat-icon">د</div><div><p>إجمالي الديون المتبقية</p><strong id="total-debt">٠</strong><small>على جميع الزبائن</small></div></article>
+      <article class="stat-card"><div class="stat-icon icon-amber">!</div><div><p>ديون متأخرة</p><strong id="overdue-total">٠</strong><small id="overdue-count">لا توجد ديون متأخرة</small></div></article>
+      <article class="stat-card"><div class="stat-icon icon-blue">👤</div><div><p>زبائن عليهم رصيد</p><strong id="owing-count">٠</strong><small>لديهم مبلغ مستحق</small></div></article>
+      <article class="stat-card"><div class="stat-icon icon-violet">↗</div><div><p>الدفعات هذا الشهر</p><strong id="month-payments">٠</strong><small>المبالغ التي تم تحصيلها</small></div></article>
+    </section>
+
+    <section class="panel customers-panel">
+      <div class="panel-heading">
+        <div><h2>كشف حساب الزبائن</h2><p class="muted">تابع الرصيد وآخر حركة وموعد المتابعة لكل زبون.</p></div>
+        <label class="search-box"><span aria-hidden="true">⌕</span><input id="search-input" type="search" placeholder="ابحث بالاسم أو الهاتف" autocomplete="off" aria-label="ابحث عن زبون"></label>
+      </div>
+      <div class="toolbar">
+        <div class="filter-tabs" role="group" aria-label="تصفية الزبائن">
+          <button class="filter-tab active" data-filter="all" type="button">الكل <span id="all-count">0</span></button>
+          <button class="filter-tab" data-filter="owing" type="button">عليهم رصيد <span id="active-count">0</span></button>
+          <button class="filter-tab" data-filter="overdue" type="button">متأخرون <span id="late-count">0</span></button>
+        </div>
+        <label class="sort-control">ترتيب حسب
+          <select id="sort-select"><option value="oldest">الأقدم متابعة</option><option value="highest">أعلى رصيد</option><option value="recent">آخر حركة</option><option value="name">الاسم</option></select>
+        </label>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>الزبون</th><th>الرصيد المتبقي</th><th>آخر حركة</th><th>موعد المتابعة</th><th class="action-heading">إجراء</th></tr></thead>
+          <tbody id="customer-rows"></tbody>
+        </table>
+        <div class="empty-state" id="empty-state"><span class="empty-illustration">▤</span><h3 id="empty-title">لا يوجد زبائن بعد</h3><p id="empty-description">أضف زبونًا لتبدأ تسجيل الديون ومتابعة الدفعات.</p><button class="button button-primary" id="empty-add-button" type="button">إضافة أول زبون</button></div>
+      </div>
+      <p class="privacy-note"><span aria-hidden="true">🔒</span> بياناتك محفوظة على هذا الجهاز. نزّل نسخة احتياطية بانتظام.</p>
+    </section>
+    <footer>دكّاني <span aria-hidden="true">·</span> دفتر ديون بسيط لمحلّك</footer>
+  </main>
+
+  <dialog class="dialog" id="customer-dialog">
+    <form id="customer-form" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">دفتر الزبائن</p><h2>إضافة زبون جديد</h2></div><button class="icon-button" type="button" data-close="customer-dialog" aria-label="إغلاق">×</button></div>
+      <label class="field">اسم الزبون <span class="required">*</span><input name="name" required maxlength="80" placeholder="مثال: أحمد محمد"></label>
+      <label class="field">رقم الهاتف <span class="optional">اختياري</span><input name="phone" type="tel" maxlength="24" placeholder="05xxxxxxxx"></label>
+      <label class="field">ملاحظات <span class="optional">اختياري</span><textarea name="notes" rows="2" maxlength="240" placeholder="عنوان أو وقت مناسب للتواصل"></textarea></label>
+      <div class="dialog-actions"><button class="button button-quiet" type="button" data-close="customer-dialog">إلغاء</button><button class="button button-primary" type="submit">حفظ الزبون</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="dialog" id="movement-dialog">
+    <form id="movement-form" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">تحديث كشف الحساب</p><h2>تسجيل حركة مالية</h2></div><button class="icon-button" type="button" data-close="movement-dialog" aria-label="إغلاق">×</button></div>
+      <label class="field">الزبون <span class="required">*</span><select name="customerId" id="movement-customer" required></select></label>
+      <fieldset class="type-picker"><legend>نوع الحركة</legend><label><input type="radio" name="type" value="debt" checked><span>إضافة دين</span></label><label><input type="radio" name="type" value="payment"><span>استلام دفعة</span></label></fieldset>
+      <div class="balance-hint" id="balance-hint"></div>
+      <label class="field"><span id="amount-label">مبلغ الدين</span> <span class="required">*</span><div class="amount-input"><input name="amount" type="number" min="0.01" step="0.01" required inputmode="decimal" placeholder="0.00"><span class="currency-label"></span></div></label>
+      <label class="field" id="due-date-field">موعد المتابعة <span class="optional">اختياري</span><input name="dueDate" type="date"><small>سيظهر التنبيه عندما يحين الموعد أو يتجاوزه.</small></label>
+      <label class="field">ملاحظة <span class="optional">اختياري</span><input name="note" maxlength="160" placeholder="مثال: مشتريات اليوم أو دفعة نقدية"></label>
+      <p class="form-error" id="movement-error" role="alert"></p>
+      <div class="dialog-actions"><button class="button button-quiet" type="button" data-close="movement-dialog">إلغاء</button><button class="button button-primary" type="submit" id="save-movement-button">حفظ الحركة</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="dialog detail-dialog" id="detail-dialog">
+    <div class="dialog-heading"><div><p class="eyebrow">كشف حساب الزبون</p><h2 id="detail-name"></h2><p class="muted" id="detail-contact"></p></div><button class="icon-button" type="button" data-close="detail-dialog" aria-label="إغلاق">×</button></div>
+    <div class="detail-balance"><span>الرصيد المستحق</span><strong id="detail-balance"></strong></div>
+    <div class="detail-actions"><button class="button button-primary" id="detail-payment-button" type="button">＋ تسجيل دفعة</button><button class="button button-outline" id="detail-debt-button" type="button">＋ إضافة دين</button></div>
+    <div class="ledger-heading"><h3>سجل الحركات</h3><span id="ledger-count"></span></div>
+    <div class="ledger-list" id="ledger-list"></div>
+    <p class="detail-notes" id="detail-notes"></p>
+  </dialog>
+
+  <dialog class="dialog" id="settings-dialog">
+    <form id="settings-form" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">تخصيص التطبيق</p><h2>إعدادات العملة</h2></div><button class="icon-button" type="button" data-close="settings-dialog" aria-label="إغلاق">×</button></div>
+      <p class="muted">اختر رمز العملة الذي يظهر بجانب المبالغ.</p>
+      <label class="field">رمز العملة<input name="currency" maxlength="8" required placeholder="مثال: ر.س، د.ج، د.أ"></label>
+      <div class="dialog-actions"><button class="button button-quiet" type="button" data-close="settings-dialog">إلغاء</button><button class="button button-primary" type="submit">حفظ الإعدادات</button></div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
