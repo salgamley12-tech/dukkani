@@ -15,16 +15,16 @@ const todayISO = () => {
 function loadState() {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!parsed || !Array.isArray(parsed.customers) || !Array.isArray(parsed.transactions)) return structuredClone(defaultState);
-    return { ...defaultState, ...parsed };
-  } catch { return structuredClone(defaultState); }
+    if (!parsed || !Array.isArray(parsed.customers) || !Array.isArray(parsed.transactions)) return { ...defaultState, customers: [], transactions: [] };
+    return { ...defaultState, ...parsed, customers: parsed.customers, transactions: parsed.transactions };
+  } catch { return { ...defaultState, customers: [], transactions: [] }; }
 }
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     return true;
   } catch {
-    showToast('تعذّر حفظ البيانات. تأكد من توفر مساحة في المتصفح.', 'error');
+    showToast('تعذّر حفظ البيانات. تحقق من مساحة المتصفح أو إعدادات الخصوصية.', 'error');
     return false;
   }
 }
@@ -46,15 +46,18 @@ function timestampText(value) {
   return Number.isNaN(date.getTime()) ? '—' : new Intl.DateTimeFormat('ar', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
 }
 function getBalance(customerId) {
-  return state.transactions.reduce((balance, tx) => tx.customerId !== customerId ? balance : balance + (tx.type === 'debt' ? Number(tx.amount) : -Number(tx.amount)), 0);
+  const total = state.transactions.reduce((balance, tx) => {
+    if (tx.customerId !== customerId) return balance;
+    return balance + (tx.type === 'debt' ? Number(tx.amount) : -Number(tx.amount));
+  }, 0);
+  return Math.max(0, Math.round(total * 100) / 100);
 }
 function customerTransactions(customerId) {
   return state.transactions.filter(tx => tx.customerId === customerId).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 function lastTransaction(customerId) { return customerTransactions(customerId)[0]; }
 function isOverdue(customer) {
-  const balance = getBalance(customer.id);
-  return balance > 0 && customer.dueDate && customer.dueDate < todayISO();
+  return getBalance(customer.id) > 0 && Boolean(customer.dueDate) && customer.dueDate < todayISO();
 }
 function showToast(message, type = 'success') {
   const toast = $('#toast');
@@ -63,8 +66,18 @@ function showToast(message, type = 'success') {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
-function openDialog(id) { const dialog = document.getElementById(id); if (dialog && !dialog.open) dialog.showModal(); }
-function closeDialog(id) { const dialog = document.getElementById(id); if (dialog?.open) dialog.close(); }
+function openDialog(id) {
+  const dialog = document.getElementById(id);
+  if (!dialog) return;
+  if (typeof dialog.showModal === 'function') dialog.showModal();
+  else dialog.setAttribute('open', '');
+}
+function closeDialog(id) {
+  const dialog = document.getElementById(id);
+  if (!dialog) return;
+  if (typeof dialog.close === 'function') dialog.close();
+  else dialog.removeAttribute('open');
+}
 function initials(name) { return (name.trim().split(/\s+/).slice(0, 2).map(part => part[0]).join('') || 'ز').toUpperCase(); }
 
 function render() {
@@ -96,8 +109,7 @@ function renderCustomers() {
     if (sortBy === 'highest') return getBalance(b.id) - getBalance(a.id);
     if (sortBy === 'recent') return new Date(lastTransaction(b.id)?.createdAt || b.createdAt) - new Date(lastTransaction(a.id)?.createdAt || a.createdAt);
     if (sortBy === 'name') return a.name.localeCompare(b.name, 'ar');
-    const aDue = a.dueDate || '9999-12-31'; const bDue = b.dueDate || '9999-12-31';
-    return aDue.localeCompare(bDue) || new Date(lastTransaction(a.id)?.createdAt || a.createdAt) - new Date(lastTransaction(b.id)?.createdAt || b.createdAt);
+    return (a.dueDate || '9999-12-31').localeCompare(b.dueDate || '9999-12-31') || new Date(lastTransaction(a.id)?.createdAt || a.createdAt) - new Date(lastTransaction(b.id)?.createdAt || b.createdAt);
   });
   $('#customer-rows').innerHTML = customers.map(customer => {
     const balance = getBalance(customer.id);
@@ -105,11 +117,11 @@ function renderCustomers() {
     const overdue = isOverdue(customer);
     const dueText = balance <= 0 ? '<span class="status status-clear">لا يوجد رصيد</span>' : customer.dueDate ? `<span class="${overdue ? 'due-overdue' : 'due-date'}">${overdue ? '<span class="status status-late">متأخر</span> ' : ''}${dateText(customer.dueDate)}</span>` : '<span class="muted">لم يحدد</span>';
     return `<tr>
-      <td><div class="customer-cell"><span class="avatar">${escapeHTML(initials(customer.name))}</span><span class="customer-meta"><strong>${escapeHTML(customer.name)}</strong><small>${escapeHTML(customer.phone || 'لا يوجد رقم هاتف')}</small></span></div></td>
-      <td class="balance-cell ${balance > 0 ? 'has-balance' : 'clear-balance'}">${money(balance)}</td>
-      <td><span class="last-movement">${last ? (last.type === 'payment' ? 'دفعة مستلمة' : 'دين مضاف') : 'لا توجد حركات'}</span><small class="table-subtext">${last ? timestampText(last.createdAt) : dateText(customer.createdAt?.slice(0, 10))}</small></td>
-      <td>${dueText}</td>
-      <td><div class="row-actions"><button class="text-action" data-action="detail" data-id="${escapeHTML(customer.id)}" type="button">كشف الحساب</button>${balance > 0 ? `<button class="small-pay" data-action="pay" data-id="${escapeHTML(customer.id)}" type="button">دفعة</button>` : ''}</div></td>
+      <td data-label="الزبون"><div class="customer-cell"><span class="avatar">${escapeHTML(initials(customer.name))}</span><span class="customer-meta"><strong>${escapeHTML(customer.name)}</strong><small>${escapeHTML(customer.phone || 'لا يوجد رقم هاتف')}</small></span></div></td>
+      <td data-label="الرصيد المتبقي" class="balance-cell ${balance > 0 ? 'has-balance' : 'clear-balance'}">${money(balance)}</td>
+      <td data-label="آخر حركة"><span class="last-movement">${last ? (last.type === 'payment' ? 'دفعة مستلمة' : 'دين مضاف') : 'لا توجد حركات'}</span><small class="table-subtext">${last ? timestampText(last.createdAt) : dateText(customer.createdAt?.slice(0, 10))}</small></td>
+      <td data-label="موعد المتابعة">${dueText}</td>
+      <td data-label="إجراء"><div class="row-actions"><button class="text-action" data-action="detail" data-id="${escapeHTML(customer.id)}" type="button">كشف الحساب</button>${balance > 0 ? `<button class="small-pay" data-action="pay" data-id="${escapeHTML(customer.id)}" type="button">دفعة</button>` : ''}</div></td>
     </tr>`;
   }).join('');
   const empty = customers.length === 0;
@@ -123,8 +135,7 @@ function renderCustomers() {
   }
 }
 function renderCustomerOptions(selectedId = '') {
-  const select = $('#movement-customer');
-  select.innerHTML = '<option value="">اختر الزبون</option>' + state.customers.map(customer => `<option value="${escapeHTML(customer.id)}" ${customer.id === selectedId ? 'selected' : ''}>${escapeHTML(customer.name)} — الرصيد ${new Intl.NumberFormat('ar', { maximumFractionDigits: 2 }).format(getBalance(customer.id))} ${escapeHTML(state.currency)}</option>`).join('');
+  $('#movement-customer').innerHTML = '<option value="">اختر الزبون</option>' + state.customers.map(customer => `<option value="${escapeHTML(customer.id)}" ${customer.id === selectedId ? 'selected' : ''}>${escapeHTML(customer.name)} — الرصيد ${new Intl.NumberFormat('ar', { maximumFractionDigits: 2 }).format(getBalance(customer.id))} ${escapeHTML(state.currency)}</option>`).join('');
 }
 function openMovement(customerId = '', type = 'debt') {
   if (!state.customers.length) { showToast('أضف زبونًا أولًا قبل تسجيل حركة.', 'error'); openDialog('customer-dialog'); return; }
@@ -134,7 +145,6 @@ function openMovement(customerId = '', type = 'debt') {
   $(`input[name="type"][value="${type}"]`).checked = true;
   updateMovementFields();
   openDialog('movement-dialog');
-  if (!customerId) $('#movement-customer').focus();
 }
 function updateMovementFields() {
   const type = $('input[name="type"]:checked').value;
@@ -172,7 +182,7 @@ $$('.filter-tab').forEach(button => button.addEventListener('click', () => {
   renderCustomers();
 }));
 $$('[data-close]').forEach(button => button.addEventListener('click', () => closeDialog(button.dataset.close)));
-$$('dialog').forEach(dialog => dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); }));
+$$('dialog').forEach(dialog => dialog.addEventListener('click', event => { if (event.target === dialog) closeDialog(dialog.id); }));
 $('#customer-rows').addEventListener('click', event => {
   const button = event.target.closest('[data-action]');
   if (!button) return;
@@ -198,25 +208,25 @@ $('#movement-form').addEventListener('submit', event => {
   const customerId = String(data.get('customerId') || '');
   const customer = state.customers.find(item => item.id === customerId);
   const type = String(data.get('type'));
-  const amount = Number(data.get('amount'));
+  const amount = Math.round(Number(data.get('amount')) * 100) / 100;
   const error = $('#movement-error');
   error.textContent = '';
   if (!customer) { error.textContent = 'اختر زبونًا من القائمة.'; return; }
   if (!Number.isFinite(amount) || amount <= 0) { error.textContent = 'أدخل مبلغًا أكبر من صفر.'; return; }
-  if (type === 'payment' && amount > getBalance(customerId) + 0.000001) { error.textContent = 'مبلغ الدفعة أكبر من رصيد الزبون الحالي.'; return; }
+  const balanceBefore = getBalance(customerId);
+  if (type === 'payment' && amount > balanceBefore) { error.textContent = 'مبلغ الدفعة أكبر من رصيد الزبون الحالي.'; return; }
   const dueDate = String(data.get('dueDate') || '');
   if (type === 'debt' && dueDate && dueDate < todayISO()) { error.textContent = 'اختر موعد متابعة اليوم أو تاريخًا لاحقًا.'; return; }
-  const transaction = { id: makeId(), customerId, type, amount: Math.round(amount * 100) / 100, note: String(data.get('note') || '').trim(), dueDate: type === 'debt' ? dueDate : '', createdAt: new Date().toISOString() };
-  state.transactions.push(transaction);
+  state.transactions.push({ id: makeId(), customerId, type, amount, note: String(data.get('note') || '').trim(), dueDate: type === 'debt' ? dueDate : '', createdAt: new Date().toISOString() });
   if (type === 'debt' && dueDate) customer.dueDate = dueDate;
-  if (type === 'payment' && amount >= getBalance(customerId) + amount - 0.000001) customer.dueDate = '';
+  if (type === 'payment' && amount >= balanceBefore) customer.dueDate = '';
   if (saveState()) {
     render(); closeDialog('movement-dialog');
     showToast(type === 'payment' ? 'تم تسجيل الدفعة وتحديث الرصيد.' : 'تم تسجيل الدين وتحديث موعد المتابعة.');
     if ($('#detail-dialog').open) openDetail(customerId);
   }
 });
-$('#settings-button').addEventListener('click', () => { $('#settings-form').elements.currency.value = state.currency; openDialog('settings-dialog'); });
+$('#settings-button').addEventListener('click', () => { $('#settings-form').elements.namedItem('currency').value = state.currency; openDialog('settings-dialog'); });
 $('#settings-form').addEventListener('submit', event => {
   event.preventDefault();
   const currency = String(new FormData(event.currentTarget).get('currency') || '').trim();
@@ -225,13 +235,15 @@ $('#settings-form').addEventListener('submit', event => {
   if (saveState()) { render(); closeDialog('settings-dialog'); showToast('تم تحديث رمز العملة.'); }
 });
 $('#export-button').addEventListener('click', () => {
-  const backup = { ...state, exportedAt: new Date().toISOString(), format: 'dukkani-backup-v1' };
-  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json;charset=utf-8' });
+  const blob = new Blob([JSON.stringify({ ...state, exportedAt: new Date().toISOString(), format: 'dukkani-backup-v1' }, null, 2)], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url; link.download = `dukkani-backup-${todayISO()}.json`; link.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
   showToast('تم تنزيل النسخة الاحتياطية. احتفظ بها في مكان آمن.');
+});
+window.addEventListener('storage', event => {
+  if (event.key === STORAGE_KEY) { state = loadState(); render(); showToast('تم تحديث البيانات من نافذة أخرى.'); }
 });
 
 render();
