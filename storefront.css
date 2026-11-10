@@ -1,4 +1,4 @@
-/* Storefront-style UI layer: compact mobile drawer, clear iconography and warmer dashboard cards. */
+/* Storefront-style layout and a right-to-left drawer controlled by the hamburger. */
 :root {
   --store-ink: #172b4d;
   --store-teal: #0f766e;
@@ -8,51 +8,7 @@
   --store-shadow: 0 10px 28px rgba(20, 43, 74, .075);
 }
 
-/* Compact, easy-to-use navigation drawer on phones. */
-@media (max-width: 760px) {
-  .sidebar {
-    width: min(250px, 78vw) !important;
-    padding: 18px 14px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-  .sidebar .brand { margin-bottom: 22px; }
-  .sidebar .nav-caption { margin: 14px 8px 8px; font-size: 11px; }
-  .sidebar .main-nav { gap: 5px; }
-  .sidebar .nav-link {
-    min-height: 43px;
-    padding: 8px 10px;
-    gap: 10px;
-    font-size: 13px;
-    border-radius: 11px;
-  }
-  .sidebar .nav-link span {
-    display: inline-grid;
-    place-items: center;
-    flex: 0 0 29px;
-    width: 29px;
-    height: 29px;
-    border-radius: 9px;
-    background: #ffffff12;
-    color: #bce7df;
-    font-size: 17px;
-    font-weight: 800;
-  }
-  .sidebar .nav-link.active span { background: #ffffff20; color: #ffe09a; }
-  .sidebar-bottom { margin-top: 16px; padding-top: 12px; }
-  .sidebar .local-badge { padding: 9px; font-size: 12px; }
-  .mobile-menu {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: #edf6f5;
-    border-color: #d7e9e6;
-    color: #0f766e;
-    box-shadow: 0 3px 10px #142b4a12;
-  }
-}
-
-/* Stronger, consistent icon tiles for the app's existing navigation icons. */
+/* Compact drawer navigation */
 .sidebar .nav-link span {
   display: inline-grid;
   place-items: center;
@@ -68,7 +24,6 @@
 .sidebar .nav-link.active span { background: #ffffff20; color: #ffe09a; }
 .stat-icon { box-shadow: inset 0 0 0 1px #172b4d08; }
 
-/* Dashboard / page header reads as a welcoming store workspace rather than a plain report. */
 .page-heading {
   position: relative;
   padding: 21px 24px;
@@ -90,72 +45,88 @@
 .page-heading .eyebrow { font-weight: 700; }
 .page-heading > div > p:last-child { margin-bottom: 0; }
 .heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-
 .stats-grid { gap: 14px; }
-.stat-card {
+.stat-card, .quick-card, .panel {
   border-radius: 18px;
   box-shadow: var(--store-shadow);
-  transition: transform .18s ease, box-shadow .18s ease;
 }
-.stat-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(20,43,74,.11); }
-.quick-card {
-  border-radius: 16px;
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-.quick-card:hover { transform: translateY(-2px); box-shadow: var(--store-shadow); }
-.panel { border-radius: 18px; box-shadow: var(--store-shadow); }
-.panel-head { padding-bottom: 13px; }
+.stat-card, .quick-card { transition: transform .18s ease, box-shadow .18s ease; }
+.stat-card:hover, .quick-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(20,43,74,.11); }
 .button-primary { min-height: 42px; }
 
+/* The hamburger controls the drawer on phones, tablets, and desktop alike. */
+.mobile-menu {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #d7e9e6;
+  border-radius: 12px;
+  background: #edf6f5;
+  color: #0f766e;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 3px 10px #142b4a12;
+}
+.main-area { width: 100% !important; margin: 0 !important; min-width: 0; }
+.sidebar {
+  position: fixed !important;
+  inset: 0 0 0 auto !important;
+  right: 0 !important;
+  left: auto !important;
+  width: min(270px, 82vw) !important;
+  max-width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 40 !important;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateX(105%) !important;
+  visibility: hidden;
+  transition: transform .24s ease, visibility .24s ease !important;
+  box-shadow: -12px 0 34px rgba(16, 36, 61, .22) !important;
+}
+.sidebar.sidebar-open {
+  transform: translateX(0) !important;
+  visibility: visible;
+}
+.mobile-scrim {
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 39 !important;
+  background: rgba(16, 36, 61, .52);
+  backdrop-filter: blur(2px);
+}
+.mobile-scrim[hidden] { display: none !important; }
+body.menu-open { overflow: hidden !important; }
+
 @media (max-width: 760px) {
-  .page-heading { padding: 17px 17px; margin-bottom: 15px; border-radius: 17px; }
+  .sidebar { width: min(250px, 78vw) !important; padding: 18px 14px; }
+  .sidebar .brand { margin-bottom: 22px; }
+  .sidebar .nav-caption { margin: 14px 8px 8px; font-size: 11px; }
+  .sidebar .main-nav { gap: 5px; }
+  .sidebar .nav-link { min-height: 43px; padding: 8px 10px; gap: 10px; font-size: 13px; border-radius: 11px; }
+  .sidebar .nav-link span { flex-basis: 29px; width: 29px; height: 29px; border-radius: 9px; font-size: 17px; }
+  .sidebar-bottom { margin-top: 16px; padding-top: 12px; }
+  .sidebar .local-badge { padding: 9px; font-size: 12px; }
+  .topbar { gap: 9px; padding-inline: 12px; }
+  .topbar-title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; }
+  .top-actions { flex: none; }
+  .page-heading { padding: 17px; margin-bottom: 15px; border-radius: 17px; }
   .page-heading .heading-actions { width: 100%; }
   .stats-grid { gap: 9px; }
   .stat-card { border-radius: 14px; }
 }
-
+@media (max-width: 390px) {
+  .topbar-title { font-size: 10px; }
+  .today-chip { display: none; }
+  .stat-card { min-width: 0; }
+  .stat-card strong { font-size: 15px; }
+}
 @media (prefers-reduced-motion: reduce) {
-  .stat-card, .quick-card, .nav-link { transition: none !important; }
-}
-
-/* Authoritative responsive drawer rules: show/hide from the right in RTL. Keep the
-   sidebar docked only on wide desktop; on phones/tablets the hamburger controls it. */
-@media (max-width: 1050px) {
-  .mobile-menu { display: inline-flex !important; }
-  .main-area { width: 100% !important; margin: 0 !important; min-width: 0; }
-  .sidebar {
-    position: fixed !important;
-    inset: 0 0 0 auto !important;
-    right: 0 !important;
-    left: auto !important;
-    width: min(270px, 82vw) !important;
-    max-width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    z-index: 40 !important;
-    overflow-y: auto;
-    transform: translateX(105%) !important;
-    visibility: hidden;
-    transition: transform .24s ease, visibility .24s ease !important;
-    box-shadow: -12px 0 34px rgba(16, 36, 61, .22) !important;
-  }
-  .sidebar.sidebar-open {
-    transform: translateX(0) !important;
-    visibility: visible;
-  }
-  .mobile-scrim {
-    display: block !important;
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 39 !important;
-    background: rgba(16, 36, 61, .52);
-    backdrop-filter: blur(2px);
-  }
-  .mobile-scrim[hidden] { display: none !important; }
-  body.menu-open { overflow: hidden !important; }
-}
-
-@media (min-width: 1051px) {
-  .mobile-menu, .mobile-scrim { display: none !important; }
-  .sidebar { transform: none !important; visibility: visible !important; }
+  .stat-card, .quick-card, .nav-link, .sidebar { transition-duration: .01ms !important; }
 }

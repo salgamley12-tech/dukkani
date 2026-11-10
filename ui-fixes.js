@@ -1,5 +1,5 @@
-// Mobile drawer controller. Capture the hamburger click before app.js's legacy
-// listener so one tap cannot toggle the drawer twice.
+// One controller owns the drawer state on every screen size. Capture the menu
+// click before app.js's legacy handler, preventing the double-toggle bug.
 (() => {
   const sidebar = document.getElementById('sidebar');
   const menuButton = document.getElementById('mobile-menu');
@@ -22,9 +22,7 @@
 
   scrim.addEventListener('click', () => setOpen(false));
   document.addEventListener('click', event => {
-    if (event.target.closest('#sidebar [data-view]') && matchMedia('(max-width: 760px)').matches) {
-      setOpen(false);
-    }
+    if (event.target.closest('#sidebar [data-view]')) setOpen(false);
   }, true);
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') setOpen(false);
