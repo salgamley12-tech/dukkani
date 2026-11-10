@@ -1,0 +1,8 @@
+{
+  "appId": "com.salgamley12tech.dukkani",
+  "appName": "دكّاني",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
