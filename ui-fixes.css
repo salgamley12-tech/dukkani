@@ -1,28 +1,94 @@
-/* Layout correction: in RTL, the sidebar belongs on the right, matching main-area's reserved space. */
-.sidebar{inset:0 0 0 auto;right:0;left:auto;border-left:0;border-right:1px solid var(--line);box-shadow:-8px 0 24px #203b2c08}
-.main-area{margin-right:250px;margin-left:0;min-width:0}
-.content{min-width:0}
-.page-heading{position:relative;padding-bottom:2px}
-.page-heading h1{line-height:1.45}
-.heading-actions{flex-wrap:wrap}
-.panel{overflow:hidden}
-.table-scroll{border-radius:8px}
-.table-scroll table{min-width:560px}
-.quick-card:focus-visible,.nav-link:focus-visible,.button:focus-visible,.text-button:focus-visible,.mini-button:focus-visible{outline:3px solid #22916c55;outline-offset:2px}
-.mobile-scrim{display:none}
-@media(max-width:1050px){.main-area{margin-right:220px;margin-left:0}}
-@media(max-width:760px){
-  .sidebar{inset:0 0 0 auto;right:0;left:auto;transform:translateX(105%);border-right:1px solid var(--line);border-left:0;box-shadow:-12px 0 32px #15291d20}
-  .sidebar.sidebar-open{transform:translateX(0)}
-  .main-area{margin:0;min-width:0;width:100%}
-  .mobile-scrim{display:block;position:fixed;inset:0;background:#14291f55;z-index:8;backdrop-filter:blur(1px)}
-  .mobile-scrim[hidden]{display:none}
-  .content{width:100%;padding:20px 13px}
-  .page-heading{width:100%}
-  .heading-actions .button{flex:0 1 auto}
-  .table-scroll{margin-inline:-2px;max-width:calc(100vw - 28px)}
-  .table-scroll table{min-width:590px}
-  .panel-head{flex-wrap:wrap}
-  .panel-head .table-search{max-width:100%}
+/* Dukkani RTL layout and mobile navigation fixes. */
+:root {
+  --green: #176b55;
+  --green-dark: #105640;
+  --ink: #24342d;
+  --muted: #78877f;
+  --line: #e5ece7;
+  --page: #f5f8f6;
 }
-@media(max-width:390px){.table-scroll{max-width:calc(100vw - 26px)}.topbar-title{min-width:0}.topbar-title strong{white-space:nowrap}}
+
+html { min-width: 320px; background: var(--page); }
+body { min-width: 320px; overflow-x: hidden; background: var(--page); color: var(--ink); }
+.app-shell { min-height: 100dvh; }
+.sidebar {
+  inset: 0 0 0 auto;
+  right: 0;
+  left: auto;
+  border-right: 1px solid var(--line);
+  border-left: 0;
+  box-shadow: -8px 0 28px #203b2c0a;
+}
+.main-area { margin-right: 250px; margin-left: 0; min-width: 0; }
+.content { width: min(1320px, 100%); min-width: 0; }
+.page-heading { align-items: center; gap: 18px; }
+.page-heading h1 { line-height: 1.45; }
+.heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.panel { overflow: hidden; }
+.table-scroll { max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; }
+.table-scroll table { min-width: 560px; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid #22916c55; outline-offset: 2px; }
+.mobile-scrim { display: none; }
+
+/* Do not allow the old layout rules to shift the RTL content back over the sidebar. */
+@media (min-width: 761px) and (max-width: 1050px) {
+  .sidebar { width: 220px; }
+  .main-area { margin-right: 220px; margin-left: 0; }
+  .content { padding-inline: 20px; }
+}
+
+@media (max-width: 760px) {
+  .sidebar {
+    inset: 0 0 0 auto;
+    right: 0;
+    left: auto;
+    width: min(290px, 84vw);
+    max-width: 100%;
+    height: 100dvh;
+    transform: translateX(105%);
+    transition: transform .22s ease;
+    z-index: 20;
+    box-shadow: -14px 0 36px #15291d24;
+  }
+  .sidebar.sidebar-open { transform: translateX(0); }
+  .main-area { width: 100%; margin: 0; min-width: 0; }
+  .mobile-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 19;
+    background: #14291f66;
+    backdrop-filter: blur(2px);
+  }
+  .mobile-scrim[hidden] { display: none; }
+  body.menu-open { overflow: hidden; }
+  .topbar { gap: 9px; padding-inline: 12px; }
+  .topbar-title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; }
+  .top-actions { flex: none; }
+  .content { width: 100%; padding: 21px 14px; }
+  .page-heading { align-items: flex-start; flex-direction: column; width: 100%; }
+  .heading-actions { width: 100%; }
+  .heading-actions .button { flex: 0 1 auto; }
+  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .two-columns, .settings-grid { grid-template-columns: minmax(0, 1fr); }
+  .table-scroll { width: 100%; max-width: 100%; margin: 0; }
+  .table-scroll table { min-width: 590px; }
+  .panel-head { flex-wrap: wrap; }
+  .panel-head .table-search { width: min(100%, 240px); }
+}
+
+@media (max-width: 390px) {
+  .content { padding-inline: 11px; }
+  .topbar-title { font-size: 10px; }
+  .topbar-title strong { white-space: nowrap; }
+  .today-chip { display: none; }
+  .stat-card { min-width: 0; }
+  .stat-card strong { font-size: 15px; }
+  .heading-actions .button { padding-inline: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
