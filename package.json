@@ -1,0 +1,16 @@
+{
+  "name": "dukkani",
+  "version": "1.0.0",
+  "private": true,
+  "description": "تطبيق دكّاني لإدارة البقالة",
+  "scripts": {
+    "prepare:web": "node scripts/prepare-web.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.0"
+  }
+}
