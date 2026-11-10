@@ -8,11 +8,11 @@
   <title>دكّاني | إدارة المحل</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="ui-fixes.css">
-  <link rel="stylesheet" href="storefront.css">
+  <link rel="stylesheet" href="menu.css">
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" aria-label="القائمة الجانبية">
       <a class="brand" href="#dashboard" aria-label="دكّاني، الرئيسية"><span class="brand-mark">د</span><span><strong id="brand-name">دكّاني</strong><small>إدارة المحل ببساطة</small></span></a>
       <p class="nav-caption">القائمة الرئيسية</p>
       <nav class="main-nav" aria-label="القائمة الرئيسية">
@@ -31,7 +31,7 @@
     </aside>
     <main class="main-area">
       <header class="topbar">
-        <button class="mobile-menu" id="mobile-menu" type="button" aria-label="فتح القائمة" aria-expanded="false">☰</button>
+        <button class="mobile-menu" id="mobile-menu" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="sidebar">☰</button>
         <div class="topbar-title"><span id="topbar-shop-name">دكّاني</span><span class="topbar-divider">/</span><strong id="page-title">الرئيسية</strong></div>
         <div class="top-actions"><span class="today-chip" id="today-label"></span><button class="icon-action" id="quick-sale" type="button" title="تسجيل بيع" aria-label="تسجيل بيع">＋<span>بيع سريع</span></button></div>
       </header>
@@ -39,7 +39,7 @@
       <footer class="app-footer"><span>دكّاني</span> · بياناتك محفوظة محليًا في هذا المتصفح</footer>
     </main>
   </div>
-  <div class="mobile-scrim" id="mobile-scrim" hidden></div>
+  <button class="mobile-scrim" id="mobile-scrim" type="button" aria-label="إغلاق القائمة" hidden></button>
   <div class="modal-backdrop" id="modal-backdrop" hidden>
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-head"><div><p class="eyebrow" id="modal-eyebrow">إدارة المحل</p><h2 id="modal-title"></h2></div><button class="icon-button" type="button" data-close-modal aria-label="إغلاق">×</button></div>
