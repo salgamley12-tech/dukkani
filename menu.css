@@ -1,24 +1,39 @@
-/* RTL drawer: closed off-canvas to the right; visible close button inside. */
+/* RTL drawer is positioned at the right edge and fully removed when closed. */
 html[dir="rtl"] #sidebar {
   position: fixed !important;
   top: 0 !important;
   right: 0 !important;
   left: auto !important;
   bottom: 0 !important;
+  box-sizing: border-box !important;
   width: min(270px, 82vw) !important;
   height: 100vh !important;
   height: 100dvh !important;
   margin: 0 !important;
   z-index: 1101 !important;
+  overflow-x: hidden !important;
   overflow-y: auto !important;
-  transform: translate3d(110%, 0, 0) !important;
+  transform: translate3d(100%, 0, 0) !important;
   visibility: hidden !important;
+  pointer-events: none !important;
   transition: transform 240ms ease, visibility 240ms ease !important;
   box-shadow: -12px 0 34px rgba(16, 36, 61, .22) !important;
 }
 html[dir="rtl"] #sidebar.sidebar-open {
   transform: translate3d(0, 0, 0) !important;
   visibility: visible !important;
+  pointer-events: auto !important;
+}
+html[dir="rtl"] .main-area {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+html[dir="rtl"] .topbar {
+  direction: rtl;
+  padding-right: 68px !important;
 }
 html[dir="rtl"] #sidebar .sidebar-close {
   position: absolute;
@@ -40,7 +55,7 @@ html[dir="rtl"] #sidebar .sidebar-close {
   cursor: pointer;
 }
 html[dir="rtl"] #sidebar .sidebar-close:hover { background: rgba(255,255,255,.22); }
-html[dir="rtl"] #sidebar .sidebar-close:focus-visible { outline: 3px solid #f3b43c; outline-offset: 2px; }
+html[dir="rtl"] #sidebar .brand { padding-left: 46px; }
 html[dir="rtl"] #mobile-menu {
   display: inline-flex !important;
   align-items: center;
@@ -65,8 +80,12 @@ html[dir="rtl"] #mobile-scrim {
 }
 html[dir="rtl"] #mobile-scrim[hidden] { display: none !important; }
 html[dir="rtl"] body.menu-open { overflow: hidden !important; }
+html, body { max-width: 100%; overflow-x: clip !important; }
 @media (max-width: 760px) {
-  html[dir="rtl"] #sidebar { width: min(250px, 78vw) !important; }
+  html[dir="rtl"] #sidebar { width: min(270px, 82vw) !important; }
+}
+@media (min-width: 761px) {
+  html[dir="rtl"] #sidebar { width: 270px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   html[dir="rtl"] #sidebar { transition-duration: .01ms !important; }

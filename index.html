@@ -8,25 +8,27 @@
   <title>دكّاني | إدارة المحل</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="ui-fixes.css">
-  <link rel="stylesheet" href="menu.css">
+  <link rel="stylesheet" href="storefront.css">
+  <link rel="stylesheet" href="menu.css?v=rtl-drawer-fix-2">
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar" aria-label="القائمة الجانبية">
+      <button class="sidebar-close" type="button" aria-label="إغلاق القائمة" title="إغلاق القائمة">×</button>
       <a class="brand" href="#dashboard" aria-label="دكّاني، الرئيسية"><span class="brand-mark">د</span><span><strong id="brand-name">دكّاني</strong><small>إدارة المحل ببساطة</small></span></a>
       <p class="nav-caption">القائمة الرئيسية</p>
       <nav class="main-nav" aria-label="القائمة الرئيسية">
-        <button class="nav-link active" data-view="dashboard"><span>▦</span>الرئيسية</button>
-        <button class="nav-link" data-view="sales"><span>↗</span>المبيعات</button>
-        <button class="nav-link" data-view="inventory"><span>▤</span>المنتجات والمخزون</button>
-        <button class="nav-link" data-view="customers"><span>♙</span>الزبائن والديون</button>
-        <button class="nav-link" data-view="purchases"><span>↙</span>المشتريات</button>
-        <button class="nav-link" data-view="expenses"><span>−</span>المصروفات</button>
-        <button class="nav-link" data-view="reports"><span>▥</span>التقارير</button>
+        <button class="nav-link active" data-view="dashboard" type="button"><span>▦</span>الرئيسية</button>
+        <button class="nav-link" data-view="sales" type="button"><span>↗</span>المبيعات</button>
+        <button class="nav-link" data-view="inventory" type="button"><span>▤</span>المنتجات والمخزون</button>
+        <button class="nav-link" data-view="customers" type="button"><span>♙</span>الزبائن والديون</button>
+        <button class="nav-link" data-view="purchases" type="button"><span>↙</span>المشتريات</button>
+        <button class="nav-link" data-view="expenses" type="button"><span>−</span>المصروفات</button>
+        <button class="nav-link" data-view="reports" type="button"><span>▥</span>التقارير</button>
       </nav>
       <div class="sidebar-bottom">
         <div class="local-badge"><span class="live-dot"></span><span><strong>حفظ محلي</strong><small>على هذا الجهاز فقط</small></span></div>
-        <button class="nav-link settings-link" data-view="settings"><span>⚙</span>الإعدادات والنسخ الاحتياطي</button>
+        <button class="nav-link settings-link" data-view="settings" type="button"><span>⚙</span>الإعدادات والنسخ الاحتياطي</button>
       </div>
     </aside>
     <main class="main-area">
@@ -48,9 +50,7 @@
   </div>
   <input id="import-file" type="file" accept="application/json,.json" hidden>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js" defer></script>
-  <script src="ui-fixes.js" defer></script>
+  <script src="app.js"></script>
+  <script src="ui-fixes.js?v=rtl-drawer-fix-2"></script>
 </body>
 </html>
-<aside class="sidebar" id="sidebar">
-  <button class="sidebar-close" type="button" aria-label="إغلاق القائمة" title="إغلاق القائمة">×</button>
