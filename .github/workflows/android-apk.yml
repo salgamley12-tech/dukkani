@@ -36,6 +36,10 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The action's default includes the obsolete `tools` SDK package,
+          # which sdkmanager can no longer resolve on GitHub-hosted runners.
+          packages: platform-tools
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
