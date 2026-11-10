@@ -7,6 +7,7 @@
   <meta name="description" content="دكّاني — إدارة المبيعات والمخزون والديون والمصروفات">
   <title>دكّاني | إدارة المحل</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="ui-fixes.css">
 </head>
 <body>
   <div class="app-shell">
@@ -25,14 +26,16 @@
       <div class="sidebar-bottom"><div class="local-badge"><span class="live-dot"></span><span><strong>حفظ محلي</strong><small>على هذا الجهاز فقط</small></span></div><button class="nav-link settings-link" data-view="settings"><span>⚙</span>الإعدادات والنسخ الاحتياطي</button></div>
     </aside>
     <main class="main-area">
-      <header class="topbar"><button class="mobile-menu" id="mobile-menu" aria-label="فتح القائمة">☰</button><div class="topbar-title"><span id="topbar-shop-name">دكّاني</span><span class="topbar-divider">/</span><strong id="page-title">الرئيسية</strong></div><div class="top-actions"><span class="today-chip" id="today-label"></span><button class="icon-action" id="quick-sale" title="تسجيل بيع" aria-label="تسجيل بيع">＋<span>بيع سريع</span></button></div></header>
+      <header class="topbar"><button class="mobile-menu" id="mobile-menu" aria-label="فتح القائمة" aria-expanded="false">☰</button><div class="topbar-title"><span id="topbar-shop-name">دكّاني</span><span class="topbar-divider">/</span><strong id="page-title">الرئيسية</strong></div><div class="top-actions"><span class="today-chip" id="today-label"></span><button class="icon-action" id="quick-sale" title="تسجيل بيع" aria-label="تسجيل بيع">＋<span>بيع سريع</span></button></div></header>
       <div class="content" id="app-content"></div>
       <footer class="app-footer"><span>دكّاني</span> · بياناتك محفوظة محليًا في هذا المتصفح</footer>
     </main>
   </div>
+  <div class="mobile-scrim" id="mobile-scrim" hidden></div>
   <div class="modal-backdrop" id="modal-backdrop" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-head"><div><p class="eyebrow" id="modal-eyebrow">دكّاني</p><h2 id="modal-title"></h2></div><button class="icon-button" type="button" data-close-modal aria-label="إغلاق">×</button></div><div id="modal-body"></div></section></div>
   <input id="import-file" type="file" accept="application/json,.json" hidden>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="app.js" defer></script>
+  <script src="ui-fixes.js" defer></script>
 </body>
 </html>

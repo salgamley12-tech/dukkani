@@ -1,0 +1,28 @@
+/* Layout correction: in RTL, the sidebar belongs on the right, matching main-area's reserved space. */
+.sidebar{inset:0 0 0 auto;right:0;left:auto;border-left:0;border-right:1px solid var(--line);box-shadow:-8px 0 24px #203b2c08}
+.main-area{margin-right:250px;margin-left:0;min-width:0}
+.content{min-width:0}
+.page-heading{position:relative;padding-bottom:2px}
+.page-heading h1{line-height:1.45}
+.heading-actions{flex-wrap:wrap}
+.panel{overflow:hidden}
+.table-scroll{border-radius:8px}
+.table-scroll table{min-width:560px}
+.quick-card:focus-visible,.nav-link:focus-visible,.button:focus-visible,.text-button:focus-visible,.mini-button:focus-visible{outline:3px solid #22916c55;outline-offset:2px}
+.mobile-scrim{display:none}
+@media(max-width:1050px){.main-area{margin-right:220px;margin-left:0}}
+@media(max-width:760px){
+  .sidebar{inset:0 0 0 auto;right:0;left:auto;transform:translateX(105%);border-right:1px solid var(--line);border-left:0;box-shadow:-12px 0 32px #15291d20}
+  .sidebar.sidebar-open{transform:translateX(0)}
+  .main-area{margin:0;min-width:0;width:100%}
+  .mobile-scrim{display:block;position:fixed;inset:0;background:#14291f55;z-index:8;backdrop-filter:blur(1px)}
+  .mobile-scrim[hidden]{display:none}
+  .content{width:100%;padding:20px 13px}
+  .page-heading{width:100%}
+  .heading-actions .button{flex:0 1 auto}
+  .table-scroll{margin-inline:-2px;max-width:calc(100vw - 28px)}
+  .table-scroll table{min-width:590px}
+  .panel-head{flex-wrap:wrap}
+  .panel-head .table-search{max-width:100%}
+}
+@media(max-width:390px){.table-scroll{max-width:calc(100vw - 26px)}.topbar-title{min-width:0}.topbar-title strong{white-space:nowrap}}
