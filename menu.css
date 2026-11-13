@@ -1,4 +1,4 @@
-/* RTL drawer is positioned at the right edge and fully removed when closed. */
+/* RTL drawer is positioned at the right edge, with a smooth slide and fade. */
 html[dir="rtl"] #sidebar {
   position: fixed !important;
   top: 0 !important;
@@ -14,13 +14,15 @@ html[dir="rtl"] #sidebar {
   overflow-x: hidden !important;
   overflow-y: auto !important;
   transform: translate3d(100%, 0, 0) !important;
+  opacity: 0;
   visibility: hidden !important;
   pointer-events: none !important;
-  transition: transform 240ms ease, visibility 240ms ease !important;
+  transition: transform 280ms cubic-bezier(.22, 1, .36, 1), opacity 220ms ease, visibility 280ms ease !important;
   box-shadow: -12px 0 34px rgba(16, 36, 61, .22) !important;
 }
 html[dir="rtl"] #sidebar.sidebar-open {
   transform: translate3d(0, 0, 0) !important;
+  opacity: 1;
   visibility: visible !important;
   pointer-events: auto !important;
 }
@@ -77,6 +79,13 @@ html[dir="rtl"] #mobile-scrim {
   border: 0;
   background: rgba(15,30,48,.48);
   backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 240ms ease, visibility 240ms ease !important;
+}
+html[dir="rtl"] #mobile-scrim.scrim-visible {
+  opacity: 1;
+  visibility: visible;
 }
 html[dir="rtl"] #mobile-scrim[hidden] { display: none !important; }
 html[dir="rtl"] body.menu-open { overflow: hidden !important; }
@@ -88,5 +97,6 @@ html, body { max-width: 100%; overflow-x: clip !important; }
   html[dir="rtl"] #sidebar { width: 270px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
-  html[dir="rtl"] #sidebar { transition-duration: .01ms !important; }
+  html[dir="rtl"] #sidebar,
+  html[dir="rtl"] #mobile-scrim { transition-duration: .01ms !important; }
 }
